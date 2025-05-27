@@ -12,7 +12,9 @@ UART_TX_CHAR_UUID = "6E400003-B5A3-F393-E0A9-E50E24DCCA9E"
 client = None
 
 def handle_rx(_, data):
+    global texto
     print(f"[ESP32 ➡️ PC] {data.decode().strip()}")
+    texto.config(text=data.decode().strip())
 
 async def connect_ble():
     global client
@@ -50,6 +52,9 @@ ventana.geometry("400x200")
 # Botón para enviar datos
 boton = tk.Button(ventana, text="Enviar a ESP32", command=on_button_click)
 boton.pack(pady=20)
+
+texto = tk.Label(ventana, text=" ")
+texto.pack(pady=20)
 
 # Lanzar el event loop de asyncio en segundo plano
 loop = asyncio.new_event_loop()
