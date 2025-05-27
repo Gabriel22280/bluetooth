@@ -1,8 +1,11 @@
-from machine import Pin, I2C
+from machine import Pin, I2C, TouchPad
 from time import sleep
 from BLE import BLEUART
 import bluetooth
 import ssd1306
+import _thread
+
+tp = TouchPad(Pin(4))
 
 # Inicializa BLE UART
 nombre = "ESP32BLUE"
@@ -33,11 +36,13 @@ def on_rx(data):
     display.text("PC:", 0, 0, 1)
     display.text(mensaje, 0, 16, 1)
     display.show()
-    
-    miusart.write("ESP32 recibio: " + mensaje + "\r\n")
     sleep(3)
     display.fill(0)
     display.show()
+    
+    miusart.write("ESP32 recibio: " + mensaje + "\r\n")
+    
+    
 
 print("Ahora está activo:", ble.active())
 # Registrar la función al IRQ de BLEUART
@@ -45,6 +50,15 @@ miusart.irq(on_rx)
 
 print("ESP32 BLE UART activo")
 
+def detectar_toque():
+    while True:
+        if tp.read() < 150:
+            print("Toque detectado")
+            miusart.write("ESP32: Se detectó un toque\n")
+            sleep(0.5)
+
+# Corre en un segundo núcleo (si tu ESP32 lo permite)
+_thread.start_new_thread(detectar_toque, ())
 
 # verificar direccion MAC
 '''
