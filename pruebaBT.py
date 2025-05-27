@@ -2,6 +2,7 @@ import asyncio
 import threading
 from bleak import BleakClient, BleakScanner
 import tkinter as tk
+from time import sleep
 
 ESP32_ADDRESS = "D4:8A:FC:C7:AD:A2"
 
@@ -15,6 +16,8 @@ def handle_rx(_, data):
     global texto
     print(f"[ESP32 ➡️ PC] {data.decode().strip()}")
     texto.config(text=data.decode().strip())
+    sleep(3)
+    texto.config(text="")
 
 async def connect_ble():
     global client
